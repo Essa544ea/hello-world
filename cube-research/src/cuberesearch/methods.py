@@ -383,7 +383,7 @@ def lse_substep_tables():
     return _lse_steps
 
 
-def run_roux(state: CubieCube, neutral: str = "x", lse: str = "opt") -> Dict:
+def run_roux(state: CubieCube, neutral: str = "x", lse: str = "opt", cmll_slack: int = -1) -> Dict:
     """Roux with optimal steps: FB (1x2x3 on L; the 4 x-rotations allowed, i.e.
     any bottom colour), SB, CMLL (optimal, includes AUF), LSE in <M,U>
     (optimal).  neutral='x' (L colour fixed) or 'full' (any L colour)."""
@@ -398,9 +398,24 @@ def run_roux(state: CubieCube, neutral: str = "x", lse: str = "opt") -> Dict:
     steps = [StepResult("FB", sol, L, nodes, " ".join(rot) or "-", alts)]
     s = capply(s, sol)
     L, sols, nodes = solve_goal(s, [fb, sb, pc]); steps.append(StepResult("SB", sols[0], L, nodes)); s = capply(s, sols[0])
-    L, sols, nodes = solve_goal(s, [fb, sb, pc, cm]); steps.append(StepResult("CMLL", sols[0], L, nodes)); s = capply(s, sols[0])
     if _lse is None:
         _lse = ReachTable(moveset("MU"), [[]])
+    if cmll_slack < 0:
+        L, sols, nodes = solve_goal(s, [fb, sb, pc, cm]); steps.append(StepResult("CMLL", sols[0], L, nodes)); s = capply(s, sols[0])
+    else:
+        # joint choice: among CMLL solutions up to optimal+slack, take the one minimising CMLL + optimal LSE
+        L, sols, nodes = solve_goal(s, [fb, sb, pc, cm], slack=cmll_slack, max_sol=5000)
+
+        def lse_len(x):
+            for r in X4:
+                xr = capply(x, r)
+                if xr in _lse.dist:
+                    return _lse.dist[xr]
+            raise AssertionError
+        best = min(sols, key=lambda q: len(q) + lse_len(capply(s, q)))
+        steps.append(StepResult("CMLL", best, len(best), nodes, None, {"greedy_first": len(sols[0]) + lse_len(capply(s, sols[0])),
+                                                                     "joint": len(best) + lse_len(capply(s, best)), "candidates": len(sols)}))
+        s = capply(s, best)
     for r in X4:                      # physically rotate the blocks to the bottom (0 STM)
         sr = capply(s, r)
         if sr in _lse.dist:

@@ -28,6 +28,11 @@
 | Kociemba Two-Phase | G1 = DR ثم حل داخل G1 مع تحسين مستمر | حلول ~19-20 HTM بسرعة | حاسوبي فقط | — | <19 متوسط (وصف الحزمة) | حزمة `kociemba` / `RubikTwoPhase` | **مرجعنا الحاسوبي المستقل** |
 | FMC (EO/DR/HTR + NISS + insertions) | تقليل حركات بشري بلا حدود زمنية قاسية (60 دقيقة) | أقل حركات بشرية (~25-30) | بطيء جداً للسرعة | خبرة عالية | ~28 لـ Roux-FMC (ruwix)، أفضل البشر أقل | [nissy-classic](https://github.com/sebastianotronto/nissy-classic) | نعيد إنتاج خطواته حسابياً |
 
+### تقنيات «التأثير» على الخطوة التالية (مرتبطة بـ H8)
+- CMLL+EO (اسمها الأول KCLL ثم CLLEO، Thom Barlow): حفظ عدة خوارزميات لكل حالة CMLL تختلف في أثرها على توجيه الحواف لتسهيل LSE.
+- EOLR / EOLRb: توجيه الحواف مع وضع UL/UR. Pinkie Pie (Rob Stuart 2011، Alex Lau 2012). المصدر: [speedsolving CMLL](https://www.speedsolving.com/wiki/index.php/CMLL) (عبر مقتطف البحث).
+- لم أجد مصدراً يقيس كمياً «كم حركة توفّر كل خوارزمية إضافية» — هذا ما يضيفه E09 (قياس لا اختراع).
+
 ## 3. أدوات وأبحاث حاسوبية
 
 | العمل | الفكرة | علاقته |

@@ -41,8 +41,8 @@ def candidates(args):
     case = state_of(fmt(invert(parse(alg))))          # the state this alg solves
     out = {}
     for g, allowed in GENS.items():
-        best, sols, nodes = core.optimal_solve(case, max_len=19, max_sol=60, slack=1 if g != "all" else 0,
-                                               allowed=allowed, node_limit=3_000_000_000)
+        best, sols, nodes = core.optimal_solve(case, max_len=19, max_sol=60, slack=0,
+                                               allowed=allowed, node_limit=300_000_000)
         for s in sols:
             out.setdefault(" ".join(s), g)
     return name, alg, out
