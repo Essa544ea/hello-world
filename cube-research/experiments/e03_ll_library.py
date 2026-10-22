@@ -142,9 +142,15 @@ EFFECT = {}
 
 
 def optimal_algs_for(k, slack=0, max_sol=6):
+    """One optimal solution always; up to max_sol if found within a node budget."""
     c = ll.from_key(k)
-    best, sols, _ = core.optimal_solve(c, max_len=18, max_sol=max_sol, slack=slack)
-    return [" ".join(s) for s in sols]
+    best, sols, _ = core.optimal_solve(c, max_len=18, max_sol=1)
+    more = []
+    b2, s2, _ = core.optimal_solve(c, max_len=best, max_sol=max_sol, slack=slack, node_limit=400_000_000)
+    if b2 == best:
+        more = s2
+    out = [" ".join(x) for x in sols + more]
+    return list(dict.fromkeys(out))
 
 
 def build_pool():
