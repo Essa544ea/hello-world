@@ -144,7 +144,9 @@ EFFECT = {}
 def optimal_algs_for(k, slack=0, max_sol=6):
     """One optimal solution always; up to max_sol if found within a node budget."""
     c = ll.from_key(k)
-    best, sols, _ = core.optimal_solve(c, max_len=18, max_sol=1)
+    best, sols, _ = core.optimal_solve(c, max_len=18, max_sol=1, node_limit=1_500_000_000)
+    if best < 0:
+        return []          # skipped: too expensive within budget (reported as skipped)
     more = []
     b2, s2, _ = core.optimal_solve(c, max_len=best, max_sol=max_sol, slack=slack, node_limit=400_000_000)
     if b2 == best:
@@ -228,6 +230,8 @@ if __name__ == "__main__":
         with Pool(4) as pool:
             solved = pool.map(solve_job, jobs, chunksize=1)
         pool_algs = {}
+        skipped = [(fam, repr(k)) for fam, k, algs in solved if not algs]
+        print("skipped cases (node budget):", len(skipped), skipped, flush=True)
         for fam, k, algs in solved:
             for a in algs:
                 for v in (a, fmt(invert(parse(a)))):
