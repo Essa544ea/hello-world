@@ -1,9 +1,0 @@
-CFOP/fixed             STM 51.12±0.41  HTM 51.12  cross=5.60 pair1=5.08 pair2=5.64 pair3=5.98 pair4=7.00 OLL=9.80 PLL=12.02
-CFOP/fullCN            STM 48.92±0.50  HTM 48.92  cross=4.74 pair1=5.06 pair2=5.58 pair3=5.94 pair4=6.78 OLL=9.26 PLL=11.56
-ZZ/OCLL+PLL            STM 45.42±0.44  HTM 45.42  EOLine=6.24 block1=9.20 block2=10.24 OCLL=8.00 PLL=11.74
-ZZ/COLL+EPLL           STM 44.48±0.54  HTM 44.48  EOLine=6.24 block1=9.20 block2=10.24 COLL=9.62 EPLL=9.18
-ZZ/ZBLL                STM 38.36±0.32  HTM 38.36  EOLine=6.24 block1=9.20 block2=10.24 ZBLL=12.68
-Petrus/OCLL+PLL        STM 45.80±0.48  HTM 45.80  2x2x2=5.88 2x2x3=6.02 EO=4.74 F2L-RU=10.12 OCLL=7.66 PLL=11.38
-Petrus/ZBLL/neutral    STM 38.22±0.36  HTM 38.22  2x2x2=4.88 2x2x3=5.82 EO=4.88 F2L-RU=10.32 ZBLL=12.32
-Roux/x-neutral         STM 35.50±0.30  HTM 41.88  FB=6.56 SB=8.54 CMLL=9.64 LSE=10.76
-Roux/fullCN            STM 34.90±0.36  HTM 41.34  FB=5.56 SB=8.96 CMLL=9.34 LSE=11.04
