@@ -1,0 +1,56 @@
+{
+ "provenance": {
+  "git": "990c2d7",
+  "dirty_tree": false,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "ncpu": 4,
+  "started": "2026-10-22 16:06:58"
+ },
+ "scramble": "F' L' U2 F U' B' U F' U2 B L F",
+ "stages": [
+  {
+   "stage": "EO",
+   "diagram_before": "  X X X  \n. . . . .\nX . X X .\n. X X X .\n  . . .  ",
+   "actions": [
+    "U2",
+    "EO-B"
+   ],
+   "moves": "U2 F U R U' R' F'",
+   "stm": 7
+  },
+  {
+   "stage": "CO|EO",
+   "diagram_before": "  . . .  \nX . X X .\n. X X X .\n. . X . X\n  X . .  ",
+   "actions": [
+    "AntiSune"
+   ],
+   "moves": "R U2 R' U' R U' R'",
+   "stm": 7
+  },
+  {
+   "stage": "CP|ori",
+   "diagram_before": "  R R R  \nB X X X F\nL X X X F\nL X X X L\n  F B B  ",
+   "actions": [
+    "Aa"
+   ],
+   "moves": "R' F R' B2 R F' R' B2 R2",
+   "stm": 9
+  },
+  {
+   "stage": "EP|ori,CP",
+   "diagram_before": "  B R B  \nL X X X R\nL X X X F\nL X X X R\n  F B F  ",
+   "actions": [
+    "U",
+    "Ub",
+    "U'"
+   ],
+   "moves": "U R2 U R U R' U' R' U' R' U R' U'",
+   "stm": 13
+  }
+ ],
+ "full_solution": "U2 F U R U' R' F' R U2 R' U' R U' R' R' F R' B2 R F' R' B2 R2 U R2 U R U R' U' R' U' R' U R' U'",
+ "stm": 36,
+ "verified": true,
+ "optimal_htm": 12
+}

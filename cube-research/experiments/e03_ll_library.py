@@ -38,14 +38,29 @@ def proj_perm(k): return (k[0], k[2])
 def proj_full(k): return k
 
 
+CP_ROT = ((0, 1, 2, 3), (1, 2, 3, 0), (2, 3, 0, 1), (3, 0, 1, 2))
 # stage = (name, domain predicate on start states, projection, goal predicate on projection)
 STAGES = {
     "EO": (lambda k: True, proj_eo, lambda p: not any(p)),
     "CO|EO": (lambda k: not any(k[3]), proj_co, lambda p: not any(p)),
     "OLL": (lambda k: True, proj_ori, lambda p: not any(p[0]) and not any(p[1])),
-    "CP|ori": (lambda k: not any(k[1]) and not any(k[3]), proj_cp, lambda p: p == (0, 1, 2, 3)),
-    "EP|ori,CP": (lambda k: not any(k[1]) and not any(k[3]) and k[0] == (0, 1, 2, 3), proj_ep, lambda p: p == (0, 1, 2, 3)),
+    # corners correct relative to each other (an AUF away); the final stage must
+    # then solve corners AND edges exactly (U turns inside it move the corners)
+    "CP|ori": (lambda k: not any(k[1]) and not any(k[3]), proj_cp, lambda p: p in CP_ROT),
+    "EP|ori,CP": (lambda k: not any(k[1]) and not any(k[3]) and k[0] in CP_ROT, proj_perm,
+                  lambda p: p == ((0, 1, 2, 3), (0, 1, 2, 3))),
     "PLL": (lambda k: not any(k[1]) and not any(k[3]), proj_perm, lambda p: p == ((0, 1, 2, 3), (0, 1, 2, 3))),
+}
+# What an algorithm used in a stage must keep intact (properties established by
+# earlier stages).  Checked on the algorithm's own effect: since F2L is
+# preserved, keeping eo/co/cp of the U layer means eo_alg==0 etc.
+PRESERVE = {
+    "EO": lambda e: True,
+    "CO|EO": lambda e: not any(e.eo[:4]),
+    "OLL": lambda e: True,
+    "CP|ori": lambda e: not any(e.eo[:4]) and not any(e.co[:4]),
+    "EP|ori,CP": lambda e: not any(e.eo[:4]) and not any(e.co[:4]) and e.cp[:4] in ((0, 1, 2, 3), (1, 2, 3, 0), (2, 3, 0, 1), (3, 0, 1, 2)),
+    "PLL": lambda e: not any(e.eo[:4]) and not any(e.co[:4]),
 }
 # goal "solved" up to final AUF is handled by allowing U turns (cost 1) inside the stage.
 
@@ -79,6 +94,9 @@ def stage_cost(stage, algs, cache={}):
     dom, proj, goal = STAGES[stage]
     weights, pstates = stage_weights(stage)
     eff = [(EFFECT[a] if a in EFFECT else ll.alg_effect(a), count(a, "STM")) for a in algs]
+    for (e, _), a in zip(eff, algs):
+        if not PRESERVE[stage](e):
+            raise ValueError(f"{a} breaks an invariant of stage {stage}")
     # Dijkstra backward on projected states using representatives: transitions are
     # well-defined on projections (checked below on a sample).
     import heapq
@@ -237,6 +255,11 @@ if __name__ == "__main__":
                 for v in (a, fmt(invert(parse(a)))):
                     pool_algs.setdefault(v, fam)
         cache.write_text(json.dumps(pool_algs))
+    for st_ in REFERENCE.values():
+        for algs_ in st_.values():
+            for a in algs_:
+                pool_algs.setdefault(a, "reference")
+                pool_algs.setdefault(fmt(invert(parse(a))), "reference")
     for a in pool_algs:
         EFFECT[a] = ll.alg_effect(a)
     print("pool size", len(pool_algs), f"{time.time()-t0:.0f}s", flush=True)
@@ -247,7 +270,8 @@ if __name__ == "__main__":
         dom, proj, goal = STAGES[stage]
         # keep only algorithms that change this stage's projection (others are useless here)
         w0, reps0 = stage_weights(stage)
-        cand = [a for a in names if any(proj(ll.key(ll.from_key(k) * EFFECT[a])) != p for p, k in list(reps0.items())[:50])]
+        cand = [a for a in names if PRESERVE[stage](EFFECT[a]) and
+                any(proj(ll.key(ll.from_key(k) * EFFECT[a])) != p for p, k in list(reps0.items())[:50])]
         chosen, curve = [], []
         best_val = float("inf")
         kmax = {"EO": 4, "CO|EO": 8, "CP|ori": 5, "EP|ori,CP": 5, "OLL": 12, "PLL": 10}[stage]

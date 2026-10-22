@@ -1,0 +1,389 @@
+{
+ "experiment": "e03",
+ "provenance": {
+  "git": "990c2d7",
+  "dirty_tree": false,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "ncpu": 4,
+  "started": "2026-10-22 15:53:48"
+ },
+ "reference": {
+  "beginner-like": {
+   "stages": {
+    "EO": {
+     "expected_STM": 10.375,
+     "situations": 3,
+     "unsolved_states": 0
+    },
+    "CO|EO": {
+     "expected_STM": 17.037037037037038,
+     "situations": 7,
+     "unsolved_states": 0
+    },
+    "CP|ori": {
+     "expected_STM": 15.416666666666666,
+     "situations": 6,
+     "unsolved_states": 0
+    },
+    "EP|ori,CP": {
+     "expected_STM": 12.416666666666666,
+     "situations": 6,
+     "unsolved_states": 0
+    }
+   },
+   "n_algs": 4,
+   "total_expected_STM": 55.24537037037037
+  },
+  "4LLL": {
+   "stages": {
+    "EO": {
+     "expected_STM": 6.5,
+     "situations": 3,
+     "unsolved_states": 0
+    },
+    "CO|EO": {
+     "expected_STM": 8.62962962962963,
+     "situations": 7,
+     "unsolved_states": 0
+    },
+    "CP|ori": {
+     "expected_STM": 13.416666666666666,
+     "situations": 6,
+     "unsolved_states": 0
+    },
+    "EP|ori,CP": {
+     "expected_STM": 9.75,
+     "situations": 6,
+     "unsolved_states": 0
+    }
+   },
+   "n_algs": 16,
+   "total_expected_STM": 38.2962962962963
+  }
+ },
+ "pool_size": 898,
+ "greedy": {
+  "EO": [
+   {
+    "k": 1,
+    "expected_STM": 8.875,
+    "situations": 3,
+    "unsolved_states": 0,
+    "added": "F U R U' R' F'"
+   },
+   {
+    "k": 2,
+    "expected_STM": 6.625,
+    "situations": 3,
+    "unsolved_states": 0,
+    "added": "F R U R' U' F'"
+   },
+   {
+    "k": 3,
+    "expected_STM": 6.5,
+    "situations": 3,
+    "unsolved_states": 0,
+    "added": "F R U R' U' F' f R U R' U' f'"
+   },
+   {
+    "k": 4,
+    "expected_STM": 6.5,
+    "situations": 3,
+    "unsolved_states": 0,
+    "added": "U"
+   }
+  ],
+  "CO|EO": [
+   {
+    "k": 1,
+    "expected_STM": 17.037037037037038,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "R U R' U R U2 R'"
+   },
+   {
+    "k": 2,
+    "expected_STM": 12.555555555555555,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "R U2 R' U' R U' R'"
+   },
+   {
+    "k": 3,
+    "expected_STM": 11.481481481481481,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "B L F L' B' L F' L'"
+   },
+   {
+    "k": 4,
+    "expected_STM": 10.481481481481481,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "R' F' r U R U' r' F"
+   },
+   {
+    "k": 5,
+    "expected_STM": 9.62962962962963,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "B2 D' B U2 B' D B U2 B"
+   },
+   {
+    "k": 6,
+    "expected_STM": 8.814814814814815,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "R U2 R2 U' R2 U' R2 U2 R"
+   },
+   {
+    "k": 7,
+    "expected_STM": 8.62962962962963,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "R U R' U R U' R' U R U2 R'"
+   },
+   {
+    "k": 8,
+    "expected_STM": 8.592592592592593,
+    "situations": 7,
+    "unsolved_states": 0,
+    "added": "B' R' B L' B' R B L"
+   }
+  ],
+  "CP|ori": [
+   {
+    "k": 1,
+    "expected_STM": 10.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "B' R B' L2 B R' B' L2 B2"
+   },
+   {
+    "k": 2,
+    "expected_STM": 9.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "B2 D' R2 U' R2 D R U R' B2 R U' R'"
+   },
+   {
+    "k": 3,
+    "expected_STM": 9.166666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "B2 L2 B R B' L2 B R' B"
+   },
+   {
+    "k": 4,
+    "expected_STM": 9.125,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "B2 D B D' B R2 F' U F R2"
+   },
+   {
+    "k": 5,
+    "expected_STM": 9.125,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "U"
+   }
+  ],
+  "EP|ori,CP": [
+   {
+    "k": 1,
+    "expected_STM": 10.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "L2 U B F' L2 B' F U L2"
+   },
+   {
+    "k": 2,
+    "expected_STM": 8.75,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "M' U M2 U M2 U M' U2 M2"
+   },
+   {
+    "k": 3,
+    "expected_STM": 8.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "L2 U' B F' L2 B' F U' L2"
+   },
+   {
+    "k": 4,
+    "expected_STM": 8.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "U"
+   },
+   {
+    "k": 5,
+    "expected_STM": 8.416666666666666,
+    "situations": 6,
+    "unsolved_states": 0,
+    "added": "U'"
+   }
+  ],
+  "OLL": [
+   {
+    "k": 1,
+    "expected_STM": 26.324074074074073,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "F R U R' U' F'"
+   },
+   {
+    "k": 2,
+    "expected_STM": 19.09259259259259,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "R U2 R' U' R U' R'"
+   },
+   {
+    "k": 3,
+    "expected_STM": 16.666666666666668,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "F U R U' R' F'"
+   },
+   {
+    "k": 4,
+    "expected_STM": 15.472222222222221,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "F R' F' L F R F' L'"
+   },
+   {
+    "k": 5,
+    "expected_STM": 14.787037037037036,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "R U R' U R U2 R'"
+   },
+   {
+    "k": 6,
+    "expected_STM": 14.333333333333334,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "R U2 R2 U' R2 U' R2 U2 R"
+   },
+   {
+    "k": 7,
+    "expected_STM": 14.12962962962963,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "B' R' B L' B' R B L"
+   },
+   {
+    "k": 8,
+    "expected_STM": 13.98611111111111,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "R' F' L2 D' L' D2 F' D' F2 L' R"
+   },
+   {
+    "k": 9,
+    "expected_STM": 13.856481481481481,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "B L2 D L D2 B D B2 L"
+   },
+   {
+    "k": 10,
+    "expected_STM": 13.75,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "B2 D' B U2 B' D B U2 B"
+   },
+   {
+    "k": 11,
+    "expected_STM": 13.671296296296296,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "L' B2 D' B' D2 L' D' L2 B'"
+   },
+   {
+    "k": 12,
+    "expected_STM": 13.601851851851851,
+    "situations": 57,
+    "unsolved_states": 0,
+    "added": "R' U2 R2 B2 R D2 L2 F' L' F2 L' D2 R' B2 R' U'"
+   }
+  ],
+  "PLL": [
+   {
+    "k": 1,
+    "expected_STM": Infinity,
+    "situations": 72,
+    "unsolved_states": 284,
+    "added": "U"
+   },
+   {
+    "k": 2,
+    "expected_STM": Infinity,
+    "situations": 72,
+    "unsolved_states": 284,
+    "added": "U'"
+   },
+   {
+    "k": 3,
+    "expected_STM": Infinity,
+    "situations": 72,
+    "unsolved_states": 280,
+    "added": "M2 U M2 U2 M2 U M2"
+   },
+   {
+    "k": 4,
+    "expected_STM": Infinity,
+    "situations": 72,
+    "unsolved_states": 280,
+    "added": "M2 U' M2 U2 M2 U' M2"
+   },
+   {
+    "k": 5,
+    "expected_STM": Infinity,
+    "situations": 72,
+    "unsolved_states": 240,
+    "added": "B' R B' L2 B R' B' L2 B2"
+   },
+   {
+    "k": 6,
+    "expected_STM": 21.35763888888889,
+    "situations": 72,
+    "unsolved_states": 0,
+    "added": "B2 D B D' B R2 F' U F R2"
+   },
+   {
+    "k": 7,
+    "expected_STM": 18.0625,
+    "situations": 72,
+    "unsolved_states": 0,
+    "added": "L2 U B F' L2 B' F U L2"
+   },
+   {
+    "k": 8,
+    "expected_STM": 17.118055555555557,
+    "situations": 72,
+    "unsolved_states": 0,
+    "added": "B2 D' B' D B' L2 F U' F' L2"
+   },
+   {
+    "k": 9,
+    "expected_STM": 16.56597222222222,
+    "situations": 72,
+    "unsolved_states": 0,
+    "added": "B2 D L2 D' B2 R2 D' F2 D R2 U'"
+   },
+   {
+    "k": 10,
+    "expected_STM": 16.15277777777778,
+    "situations": 72,
+    "unsolved_states": 0,
+    "added": "B2 L2 B R B' L2 B R' B"
+   }
+  ]
+ },
+ "seconds": 616.2765035629272
+}
