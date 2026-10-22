@@ -1,0 +1,22 @@
+{
+ "provenance": {
+  "git": "2e9e6f6",
+  "dirty_tree": true,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "ncpu": 4,
+  "started": "2026-10-22 13:36:48"
+ },
+ "a_entered_g1": 0,
+ "a_tested": 2000,
+ "b_visual_corner_perms": 576,
+ "b_g3_corner_perms": 96,
+ "b_visual_htr_states": 3981312,
+ "b_g3_states": 663552,
+ "b_fake_fraction": 0.8333333333333334,
+ "b_fake_example_facelets": "UUUUUUUUURRRRRLRRLFFFFFFBFFDDDDDDDDDLLLRLLLLRBBBBBBFBB",
+ "b_fake_example_opt_htm": -2,
+ "b_fake_example_halfturn_only": -1,
+ "c_htm": [],
+ "c_atm": []
+}

@@ -28,6 +28,9 @@ PIECES = {
     "CMLL": ["URF", "UFL", "ULB", "UBR"], "LSE": ["UR", "UF", "UL", "UB", "DF", "DB"],
     "EOLine": ["DF", "DB"], "2x2x2": ["DBL", "DL", "DB", "BL"], "2x2x3": ["DLF", "DF", "FL"],
     "LB": ["DLF", "DBL", "DL", "FL", "BL"], "RB": ["DFR", "DRB", "DR", "FR", "BR"],
+    "EO": ["UR", "UF", "UL", "UB", "DR", "DF", "DL", "DB", "FR", "FL", "BL", "BR"],
+    "ULUR": ["UL", "UR"], "4c": ["UF", "UB", "DF", "DB"], "xcross": ["DR", "DF", "DL", "DB"],
+    "EOCross": ["DR", "DF", "DL", "DB"],
 }
 
 EXPLAIN = {
@@ -50,6 +53,14 @@ EXPLAIN = {
     "SB": "الكتلة الثانية في Roux: 1×2×3 على اليمين دون كسر الأولى.",
     "CMLL": "حل أركان الطبقة العليا دون الاهتمام بالحواف والشريحة الوسطى.",
     "LSE": "آخر ست حواف بحركات M وU فقط.",
+    "ULUR": "وضع حافتي UL وUR (بعد توجيه الحواف).",
+    "4c": "آخر أربع حواف في الشريحة الوسطى مع المراكز.",
+    "DR": "اختزال الدومينو: كل ألوان U/D على U/D وحواف الشريحة E في مكانها (بحركات R,L,U,D,F2,B2).",
+    "HTR": "اختزال أنصاف اللفات: حالة قابلة للحل بأنصاف لفات فقط (شرط دقيق، لا «HTR مزيّف»).",
+    "finish": "الإنهاء بأنصاف لفات فقط.",
+    "xcross": "صليب + زوج في خطوة واحدة (يُخطَّط في الفحص).",
+    "EOCross": "توجيه كل الحواف + الصليب.",
+    "1LLL": "الطبقة الأخيرة في نظرة واحدة (3915 حالة).",
 }
 
 
@@ -61,7 +72,11 @@ def methods_registry():
         "ZZ/OCLL+PLL": ("ZZ + OCLL/PLL", lambda c: M.run_zz(c, "ocll_pll")),
         "ZZ/ZBLL": ("ZZ + ZBLL", lambda c: M.run_zz(c, "zbll")),
         "Petrus/OCLL+PLL": ("Petrus + OCLL/PLL", lambda c: M.run_petrus(c, "ocll_pll")),
-        "Roux/x-neutral": ("Roux", lambda c: M.run_roux(c, "x")),
+        "Roux/x-neutral": ("Roux (LSE أمثل)", lambda c: M.run_roux(c, "x")),
+        "Roux/lse-steps": ("Roux (LSE بالخطوات البشرية EO→ULUR→4c)", lambda c: M.run_roux(c, "x", "steps")),
+        "EO-DR-HTR": ("EO → DR → HTR → إنهاء بأنصاف لفات (أسلوب FMC)", lambda c: M.run_thistle(c, "half")),
+        "XCross-CFOP": ("CFOP مع xcross", lambda c: M.run_chain(c, M.chain_library()["XCross-CFOP"], "XCross-CFOP")),
+        "EOCross+ZBLL": ("EOCross + أزواج <R,U,L,D> + ZBLL", lambda c: M.run_chain(c, M.chain_library()["EOCross+pairs(RULD)+ZBLL"], "EOCross+ZBLL")),
     }
 
 

@@ -1,0 +1,364 @@
+{
+ "experiment": "e07",
+ "provenance": {
+  "git": "2e9e6f6",
+  "dirty_tree": true,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "ncpu": 4,
+  "started": "2026-10-22 13:54:21"
+ },
+ "rows": [
+  {
+   "shape": "cross (D)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 190080,
+   "goal_states": 1,
+   "fraction_of_cube": 5.260942760942761e-06,
+   "reach_mean": 5.812058080808081,
+   "reach_max": 8,
+   "reach_hist": [
+    1,
+    15,
+    158,
+    1394,
+    9809,
+    46381,
+    97254,
+    34966,
+    102
+   ],
+   "stickers": 8,
+   "seconds": 0.613147497177124
+  },
+  {
+   "shape": "xcross (cross + FR pair)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 72990720,
+   "goal_states": 1,
+   "fraction_of_cube": 1.370037177328844e-08,
+   "reach_mean": 7.975721804086875,
+   "reach_max": 10,
+   "reach_hist": [
+    1,
+    15,
+    172,
+    1950,
+    21535,
+    220368,
+    1989591,
+    13431990,
+    40963892,
+    16325184,
+    36022
+   ],
+   "stickers": 13,
+   "seconds": 22.59773063659668
+  },
+  {
+   "shape": "F2L pair FR alone (corner+edge solved)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "L",
+    "L2",
+    "L'",
+    "B",
+    "B2",
+    "B'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 576,
+   "goal_states": 1,
+   "fraction_of_cube": 0.001736111111111111,
+   "reach_mean": 3.513888888888889,
+   "reach_max": 6,
+   "reach_hist": [
+    1,
+    9,
+    54,
+    195,
+    265,
+    50,
+    2
+   ],
+   "stickers": 5,
+   "seconds": 0.001809835433959961
+  },
+  {
+   "shape": "2x2x2 at DBL",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "R",
+    "R2",
+    "R'",
+    "F",
+    "F2",
+    "F'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 253440,
+   "goal_states": 1,
+   "fraction_of_cube": 3.945707070707071e-06,
+   "reach_mean": 6.033834438131313,
+   "reach_max": 8,
+   "reach_hist": [
+    1,
+    9,
+    90,
+    852,
+    7169,
+    44182,
+    131636,
+    68940,
+    561
+   ],
+   "stickers": 9,
+   "seconds": 0.04692482948303223
+  },
+  {
+   "shape": "EO (all 12 edges, F/B axis)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "R",
+    "R2",
+    "R'",
+    "F2",
+    "D",
+    "D2",
+    "D'",
+    "L",
+    "L2",
+    "L'",
+    "B2"
+   ],
+   "metric": "HTM",
+   "abstract_states": 2048,
+   "goal_states": 1,
+   "fraction_of_cube": 0.00048828125,
+   "reach_mean": 4.60888671875,
+   "reach_max": 7,
+   "reach_hist": [
+    1,
+    2,
+    25,
+    202,
+    620,
+    900,
+    285,
+    13
+   ],
+   "stickers": 24,
+   "seconds": 0.008106708526611328
+  },
+  {
+   "shape": "EOLine (EO + DF, DB)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "R",
+    "R2",
+    "R'",
+    "L",
+    "L2",
+    "L'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 270336,
+   "goal_states": 1,
+   "fraction_of_cube": 3.699100378787879e-06,
+   "reach_mean": 6.126535126657197,
+   "reach_max": 9,
+   "reach_hist": [
+    1,
+    9,
+    91,
+    851,
+    6831,
+    41703,
+    130239,
+    88683,
+    1927,
+    1
+   ],
+   "stickers": 24,
+   "seconds": 0.9566104412078857
+  },
+  {
+   "shape": "EOCross (EO + 4 D edges)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 24330240,
+   "goal_states": 1,
+   "fraction_of_cube": 4.110111531986532e-08,
+   "reach_mean": 7.530829494489162,
+   "reach_max": 10,
+   "reach_hist": [
+    1,
+    15,
+    178,
+    1982,
+    21041,
+    204732,
+    1645039,
+    8477633,
+    12917628,
+    1061851,
+    140
+   ],
+   "stickers": 24,
+   "seconds": 170.2094931602478
+  },
+  {
+   "shape": "CO (all corners oriented, U/D axis)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "R2",
+    "F2",
+    "D",
+    "D2",
+    "D'",
+    "L2",
+    "B2"
+   ],
+   "metric": "HTM",
+   "abstract_states": 2187,
+   "goal_states": 1,
+   "fraction_of_cube": 0.0004572473708276177,
+   "reach_mean": 4.459076360310928,
+   "reach_max": 6,
+   "reach_hist": [
+    1,
+    4,
+    34,
+    186,
+    816,
+    1018,
+    128
+   ],
+   "stickers": 24,
+   "seconds": 0.008840560913085938
+  },
+  {
+   "shape": "DR part: CO + E-slice edges in E",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "R2",
+    "F2",
+    "D",
+    "D2",
+    "D'",
+    "L2",
+    "B2"
+   ],
+   "metric": "HTM",
+   "abstract_states": 1082565,
+   "goal_states": 1,
+   "fraction_of_cube": 9.237320622780157e-07,
+   "reach_mean": 6.7391094299187575,
+   "reach_max": 9,
+   "reach_hist": [
+    1,
+    4,
+    50,
+    586,
+    6184,
+    54066,
+    296322,
+    582492,
+    142520,
+    340
+   ],
+   "stickers": 32,
+   "seconds": 0.2159411907196045
+  },
+  {
+   "shape": "Roux FB (any of 4 x-rotations)",
+   "preserving_moves": [
+    "R",
+    "R2",
+    "R'",
+    "L",
+    "L2",
+    "L'",
+    "M",
+    "M2",
+    "M'",
+    "r",
+    "r2",
+    "r'"
+   ],
+   "metric": "STM(Roux moves)",
+   "abstract_states": 5322240,
+   "goal_states": 4,
+   "fraction_of_cube": 7.515632515632515e-07,
+   "reach_mean": 6.525601250601251,
+   "reach_max": 9,
+   "reach_hist": [
+    4,
+    36,
+    424,
+    4764,
+    47260,
+    381648,
+    1884336,
+    2717848,
+    285872,
+    48
+   ],
+   "stickers": 13,
+   "seconds": 0.6665544509887695
+  },
+  {
+   "shape": "LL corners oriented only (OCLL done, ignoring F2L)",
+   "preserving_moves": [
+    "U",
+    "U2",
+    "U'",
+    "D",
+    "D2",
+    "D'"
+   ],
+   "metric": "HTM",
+   "abstract_states": 5670,
+   "goal_states": 1,
+   "fraction_of_cube": 0.0001763668430335097,
+   "reach_mean": 4.099823633156967,
+   "reach_max": 5,
+   "reach_hist": [
+    1,
+    12,
+    109,
+    846,
+    3032,
+    1670
+   ],
+   "stickers": 4,
+   "seconds": 0.009106874465942383
+  }
+ ]
+}

@@ -321,13 +321,12 @@ class ReachTable:
     """Exact distance table for a small restricted-move subgroup coset, built by
     BFS from goal states over full C-format states (hash map)."""
 
-    def __init__(self, moves: Sequence[str], targets: Sequence[Sequence[str]]):
+    def __init__(self, moves: Sequence[str], targets: Sequence[Sequence[str]] = (), target_states=()):
         self.moves = list(moves)
         self.mv = [cseq([m]) for m in self.moves]
         self.dist: Dict[CState, int] = {}
         frontier = []
-        for t in targets:
-            s = cseq(list(t))
+        for s in list(target_states) + [cseq(list(t)) for t in targets]:
             if s not in self.dist:
                 self.dist[s] = 0
                 frontier.append(s)
@@ -355,9 +354,36 @@ class ReachTable:
 
 
 _lse = None
+_lse_steps = None
 
 
-def run_roux(state: CubieCube, neutral: str = "x") -> Dict:
+def lse_substep_tables():
+    """Human LSE decomposition (blocks at the bottom), each goal an exact set:
+    EO   = all edges oriented relative to the U/D centres: for some k, applying
+           M^k puts the U/D centres on U/D and leaves every edge oriented;
+    ULUR = EO done and the rest finishable with <M, U2>;   4c = solved."""
+    global _lse_steps
+    if _lse_steps is None:
+        mu = moveset("MU")
+        full = ReachTable(mu, [[]])
+        mk = [cseq([]), cseq(["M"]), cseq(["M2"]), cseq(["M'"])]
+        home, m2c = cseq([])[4], cseq(["M2"])[4]
+
+        def eo_done(x):
+            for m in mk:
+                y = cmul(x, m)
+                if y[4] in (home, m2c) and not any(y[3]):
+                    return True
+            return False
+        g_eo = {x for x in full.dist if eo_done(x)}
+        g_ulur = set(ReachTable(["M", "M2", "M'", "U2"], [[]]).dist)
+        _lse_steps = [("EO", ReachTable(mu, target_states=g_eo)),
+                      ("ULUR", ReachTable(mu, target_states=g_eo & g_ulur)),
+                      ("4c", full)]
+    return _lse_steps
+
+
+def run_roux(state: CubieCube, neutral: str = "x", lse: str = "opt") -> Dict:
     """Roux with optimal steps: FB (1x2x3 on L; the 4 x-rotations allowed, i.e.
     any bottom colour), SB, CMLL (optimal, includes AUF), LSE in <M,U>
     (optimal).  neutral='x' (L colour fixed) or 'full' (any L colour)."""
@@ -374,16 +400,23 @@ def run_roux(state: CubieCube, neutral: str = "x") -> Dict:
     L, sols, nodes = solve_goal(s, [fb, sb, pc]); steps.append(StepResult("SB", sols[0], L, nodes)); s = capply(s, sols[0])
     L, sols, nodes = solve_goal(s, [fb, sb, pc, cm]); steps.append(StepResult("CMLL", sols[0], L, nodes)); s = capply(s, sols[0])
     if _lse is None:
-        _lse = ReachTable(moveset("MU"), X4)
+        _lse = ReachTable(moveset("MU"), [[]])
     for r in X4:                      # physically rotate the blocks to the bottom (0 STM)
         sr = capply(s, r)
         if sr in _lse.dist:
             break
     else:
         raise AssertionError("LSE state not in <M,U> coset")
-    sol = _lse.solve(sr)
-    steps.append(StepResult("LSE", list(r) + sol, len(sol), 0, " ".join(r) or "-"))
-    return finish_(f"Roux-opt/{neutral}", state, rot, steps)
+    if lse == "opt":
+        sol = _lse.solve(sr)
+        steps.append(StepResult("LSE", list(r) + sol, len(sol), 0, " ".join(r) or "-"))
+    else:
+        first = True
+        for name, tab in lse_substep_tables():
+            sol = tab.solve(sr)
+            steps.append(StepResult(name, (list(r) if first else []) + sol, len(sol), 0))
+            sr = capply(sr, sol); first = False
+    return finish_(f"Roux-opt/{neutral}/lse-{lse}", state, rot, steps)
 
 
 # ---------------------------------------------------------------- EO -> DR -> HTR -> finish
@@ -435,3 +468,116 @@ def run_thistle(state: CubieCube, finish: str = "half", orients=((),)) -> Dict:
         Lf, sols, nodes = core.optimal_solve(c, max_len=20)
     steps.append(StepResult("finish", sols[0], Lf, nodes))
     return finish_(f"EO-DR-HTR-opt/{finish}", state, rot, steps)
+
+
+# ---------------------------------------------------------------- generic chains (H2)
+CROSS_SPEC = dict(edges=CROSS_E)
+PAIR_SPECS = {k: dict(corners=[c], edges=CROSS_E + [e]) for k, (c, e) in PAIRS.items()}
+EO_SPEC = dict(edges_ori=ALL_E)
+
+
+def _pat(spec: Dict, moves) -> core.Pattern:
+    """Pattern for a spec on a move set; the name only depends on the spec so
+    tables are shared between chains."""
+    import hashlib
+    h = hashlib.sha1(repr(sorted((k, tuple(v)) for k, v in spec.items())).encode()).hexdigest()[:8]
+    return pattern(f"spec{h}", moves, **spec)
+
+
+OLL_SPEC = dict(corners_ori=U_C, edges_ori=U_E)
+OCLL_SPEC = dict(corners_ori=U_C)
+
+
+def run_chain(state: CubieCube, chain: List[Dict], label: str, orients=((),)) -> Dict:
+    """Evaluate a method given as a list of steps (face moves only, centres fixed).
+    step = {"name", "moves": list, "options": {opt_label: [spec, ...]}, "repeat": n}
+    Each option is a list of pattern specs whose conjunction is the option's goal.
+    The cheapest option is taken (the 'pick the easiest' rule); with repeat=n,
+    n options are consumed one by one.  Options already satisfied by earlier goals
+    are skipped.  Goals of all earlier steps are kept, so nothing is undone.
+    {"name": X, "final": True}: exact optimal finish (Korf, face moves).
+    {"name": X, "ll": "oll"|"ocll"|"coll"}: LL sub-step on face moves.
+    The first step may be tried in several whole-cube orientations (orients)."""
+    s0 = from_cubie(state)
+    s = s0
+    kept: List[Dict] = []
+    kept_keys = set()
+    steps: List[StepResult] = []
+    best_rot: List[str] = []
+    spec_key = lambda sp: repr(sorted((k, tuple(v)) for k, v in sp.items()))
+    for si, st in enumerate(chain):
+        if st.get("final"):
+            for sp in kept + st.get("require", []):      # preconditions must hold exactly
+                if _pat(sp, FACE).distance(to_bytes(s)) != 0:
+                    raise AssertionError(f"{label}: precondition {sp} not met before {st['name']}")
+            steps.append(final_solve(s, st["name"]))
+            s = capply(s, steps[-1].moves)
+            continue
+        if st.get("ll"):
+            extra = {"oll": [OLL_SPEC], "ocll": [OCLL_SPEC], "coll": None}[st["ll"]]
+            goal = [_pat(sp, FACE) for sp in kept + (extra or [])]
+            if st["ll"] == "coll":
+                goal.append(pattern("ll_corners_auf", FACE, corners=U_C, targets=[[], ["U"], ["U2"], ["U'"]]))
+            L, sols, nodes = solve_goal(s, goal)
+            steps.append(StepResult(st["name"], sols[0], L, nodes))
+            s = capply(s, sols[0])
+            if extra:
+                kept += extra
+            continue
+        moves = st["moves"]
+        # an option whose primary goal (first spec) is already achieved is not a real option
+        remaining = {k: v for k, v in st["options"].items() if spec_key(v[0]) not in kept_keys}
+        for rep in range(st.get("repeat", 1)):
+            best, alts = None, {}
+            rots = [list(o) for o in orients] if si == 0 else [None]
+            for rot in rots:
+                base = conjugate(s0, rot) if si == 0 else s
+                for olabel, specs in remaining.items():
+                    goal = [_pat(sp, moves) for sp in kept + list(specs)]
+                    L, sols, nodes = solve_goal(base, goal)
+                    if L < 0:
+                        raise RuntimeError(f"{label}/{st['name']}/{olabel}: search failed ({L})")
+                    key = (" ".join(rot) + ":" if rot else "") + olabel
+                    alts[key] = L
+                    if best is None or L < best[0]:
+                        best = (L, olabel, specs, sols[0], nodes, rot, base)
+            L, olabel, specs, sol, nodes, rot, base = best
+            if si == 0:
+                best_rot = rot or []
+                s = base
+            steps.append(StepResult(st["name"] + (f"{rep + 1}" if st.get("repeat", 1) > 1 else ""), sol, L, nodes,
+                                    olabel, alts if len(alts) > 1 else None))
+            s = capply(s, sol)
+            for sp in specs:
+                if spec_key(sp) not in kept_keys:
+                    kept.append(sp); kept_keys.add(spec_key(sp))
+            del remaining[olabel]
+            remaining = {k: v for k, v in remaining.items() if spec_key(v[0]) not in kept_keys}
+            if not remaining:
+                break
+    return finish_(label, state, best_rot, steps)
+
+
+def chain_library() -> Dict[str, Tuple[List[Dict], Sequence]]:
+    """Named chains (known methods expressed in the chain language + hybrids)."""
+    F, RUL, RULD = FACE, moveset("RUL"), moveset("RULD")
+    pairs = {"options": {k: [v] for k, v in PAIR_SPECS.items()}, "repeat": 4}
+    pairs3 = {"options": {k: [v] for k, v in PAIR_SPECS.items()}, "repeat": 3}
+    lib = {
+        "CFOP": [dict(name="cross", moves=F, options={"D": [CROSS_SPEC]}), dict(name="pair", moves=F, **pairs),
+                 dict(name="OLL", ll="oll"), dict(name="PLL", final=True)],
+        "XCross-CFOP": [dict(name="xcross", moves=F, options={k: [v] for k, v in PAIR_SPECS.items()}),
+                        dict(name="pair", moves=F, **pairs3), dict(name="OLL", ll="oll"), dict(name="PLL", final=True)],
+        "EOCross+pairs(RULD)+ZBLL": [dict(name="EOCross", moves=F, options={"D": [CROSS_SPEC, EO_SPEC]}),
+                                     dict(name="pair", moves=RULD, **pairs), dict(name="ZBLL", final=True, require=[EO_SPEC])],
+        "EOCross+pairs(RULD)+OCLL+PLL": [dict(name="EOCross", moves=F, options={"D": [CROSS_SPEC, EO_SPEC]}),
+                                         dict(name="pair", moves=RULD, **pairs), dict(name="OCLL", ll="ocll"),
+                                         dict(name="PLL", final=True)],
+        "CFOP+ZBLS-like(EO in last pair)+ZBLL": [dict(name="cross", moves=F, options={"D": [CROSS_SPEC]}),
+                                                 dict(name="pair", moves=F, **pairs3),
+                                                 dict(name="LS+EO", moves=F, options={k: [v, EO_SPEC] for k, v in PAIR_SPECS.items()}),
+                                                 dict(name="ZBLL", final=True, require=[EO_SPEC])],
+        "CFOP+1LLL": [dict(name="cross", moves=F, options={"D": [CROSS_SPEC]}), dict(name="pair", moves=F, **pairs),
+                      dict(name="1LLL", final=True)],
+    }
+    return lib

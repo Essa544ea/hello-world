@@ -1,0 +1,11 @@
+cross (D)                                            frac=5.26e-06 reach mean=5.812 max=8 stickers=8 preserved=U U2 U'
+xcross (cross + FR pair)                             frac=1.37e-08 reach mean=7.976 max=10 stickers=13 preserved=U U2 U'
+F2L pair FR alone (corner+edge solved)               frac=0.00174 reach mean=3.514 max=6 stickers=5 preserved=U U2 U' L L2 L' B B2 B'
+2x2x2 at DBL                                         frac=3.95e-06 reach mean=6.034 max=8 stickers=9 preserved=U U2 U' R R2 R' F F2 F'
+EO (all 12 edges, F/B axis)                          frac=0.000488 reach mean=4.609 max=7 stickers=24 preserved=U U2 U' R R2 R' F2 D D2 D' L L2 L' B2
+EOLine (EO + DF, DB)                                 frac=3.7e-06 reach mean=6.127 max=9 stickers=24 preserved=U U2 U' R R2 R' L L2 L'
+EOCross (EO + 4 D edges)                             frac=4.11e-08 reach mean=7.531 max=10 stickers=24 preserved=U U2 U'
+CO (all corners oriented, U/D axis)                  frac=0.000457 reach mean=4.459 max=6 stickers=24 preserved=U U2 U' R2 F2 D D2 D' L2 B2
+DR part: CO + E-slice edges in E                     frac=9.24e-07 reach mean=6.739 max=9 stickers=32 preserved=U U2 U' R2 F2 D D2 D' L2 B2
+Roux FB (any of 4 x-rotations)                       frac=7.52e-07 reach mean=6.526 max=9 stickers=13 preserved=R R2 R' L L2 L' M M2 M' r r2 r'
+LL corners oriented only (OCLL done, ignoring F2L)   frac=0.000176 reach mean=4.100 max=5 stickers=4 preserved=U U2 U' D D2 D'

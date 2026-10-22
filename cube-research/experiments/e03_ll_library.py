@@ -5,7 +5,7 @@ predicate on a projection of the LL state), what expected STM is achievable
 with k algorithms, if the solver uses its algorithms optimally (exact
 Dijkstra over the projected state space; U turns between algorithms cost 1)?
 
-Pool of candidate algorithms: optimal (and optimal+1) face-turn solutions,
+Pool of candidate algorithms: up to 6 optimal face-turn solutions,
 computed with our Korf solver, for one representative of every OLL, PLL,
 OCLL, COLL and EO case, plus their inverses (inverse of an LL alg is an LL alg).
 Distribution: uniform over the 62,208 LL states (exact weights, no sampling).
@@ -21,7 +21,7 @@ is reported for each library (cases_to_recognise).
 import json, sys, time
 from collections import Counter
 from multiprocessing import Pool
-from common import provenance, save
+from common import provenance, save, ROOT
 from cuberesearch import ll, core
 from cuberesearch.cubie import SOLVED
 from cuberesearch.notation import parse, invert, fmt, count, state_of
@@ -54,17 +54,31 @@ def u_moves():
     return [ll.U_POW[i] for i in range(4)]
 
 
+_W = {}
+
+
+def stage_weights(stage):
+    """Counter of projected start states (exact weights over the uniform LL
+    distribution restricted to the stage's domain)."""
+    if stage not in _W:
+        dom, proj, goal = STAGES[stage]
+        w, reps = {}, {}
+        for k in S:
+            if dom(k):
+                p = proj(k)
+                w[p] = w.get(p, 0) + 1
+                reps.setdefault(p, k)
+        _W[stage] = (w, reps)
+    return _W[stage]
+
+
 def stage_cost(stage, algs, cache={}):
     """Expected cost (STM) of a stage over the uniform distribution of its start
     states, solver using `algs` optimally; also number of distinct start
     situations (projected states up to pre-AUF) that require a decision."""
     dom, proj, goal = STAGES[stage]
-    starts = [k for k in S if dom(k)]
-    # projected state space and transitions
-    eff = [(ll.alg_effect(a), count(a, "STM")) for a in algs]
-    pstates = {}
-    for k in starts:
-        pstates.setdefault(proj(k), k)
+    weights, pstates = stage_weights(stage)
+    eff = [(EFFECT[a] if a in EFFECT else ll.alg_effect(a), count(a, "STM")) for a in algs]
     # Dijkstra backward on projected states using representatives: transitions are
     # well-defined on projections (checked below on a sample).
     import heapq
@@ -105,14 +119,15 @@ def stage_cost(stage, algs, cache={}):
         for p, w in rev[q]:
             if d + w < dist.get(p, 1 << 30):
                 dist[p] = d + w; heapq.heappush(pq, (d + w, p))
-    tot, unsolved = 0, 0
-    for k in starts:
-        d = dist.get(proj(k))
+    tot, unsolved, n = 0, 0, 0
+    for p, w in weights.items():
+        n += w
+        d = dist.get(p)
         if d is None:
-            unsolved += 1
+            unsolved += w
         else:
-            tot += d
-    exp = tot / len(starts) if not unsolved else float("inf")
+            tot += d * w
+    exp = tot / n if not unsolved else float("inf")
     # situations: projected start states up to pre-AUF (U^a * state), excluding goal
     situ = set()
     for p, k in pstates.items():
@@ -123,7 +138,10 @@ def stage_cost(stage, algs, cache={}):
     return exp, len(situ), unsolved
 
 
-def optimal_algs_for(k, slack=1, max_sol=6):
+EFFECT = {}
+
+
+def optimal_algs_for(k, slack=0, max_sol=6):
     c = ll.from_key(k)
     best, sols, _ = core.optimal_solve(c, max_len=18, max_sol=max_sol, slack=slack)
     return [" ".join(s) for s in sols]
@@ -194,23 +212,32 @@ if __name__ == "__main__":
                      "n_algs": sum(len(v) for v in st.values()),
                      "total_expected_STM": sum(r[0] for r in rows.values())}
         print(name, json.dumps(ref[name]), flush=True)
-    core.korf_init()
-    jobs = build_pool()
-    print("pool cases", Counter(f for f, _ in jobs), flush=True)
-    with Pool(4) as pool:
-        solved = pool.map(solve_job, jobs, chunksize=4)
-    pool_algs = {}
-    for fam, k, algs in solved:
-        for a in algs:
-            for v in (a, fmt(invert(parse(a)))):
-                pool_algs.setdefault(v, fam)
+    cache = ROOT / "results" / "e03_pool.json"
+    if cache.exists():
+        pool_algs = json.loads(cache.read_text())
+    else:
+        core.korf_init()
+        jobs = build_pool()
+        print("pool cases", Counter(f for f, _ in jobs), flush=True)
+        with Pool(4) as pool:
+            solved = pool.map(solve_job, jobs, chunksize=1)
+        pool_algs = {}
+        for fam, k, algs in solved:
+            for a in algs:
+                for v in (a, fmt(invert(parse(a)))):
+                    pool_algs.setdefault(v, fam)
+        cache.write_text(json.dumps(pool_algs))
+    for a in pool_algs:
+        EFFECT[a] = ll.alg_effect(a)
     print("pool size", len(pool_algs), f"{time.time()-t0:.0f}s", flush=True)
     names = list(pool_algs)
     # greedy selection per stage for the 4-look structure EO -> CO|EO -> CP|ori -> EP
     results = {}
     for stage in ("EO", "CO|EO", "CP|ori", "EP|ori,CP", "OLL", "PLL"):
         dom, proj, goal = STAGES[stage]
-        cand = [a for a in names if True]
+        # keep only algorithms that change this stage's projection (others are useless here)
+        w0, reps0 = stage_weights(stage)
+        cand = [a for a in names if any(proj(ll.key(ll.from_key(k) * EFFECT[a])) != p for p, k in list(reps0.items())[:50])]
         chosen, curve = [], []
         best_val = float("inf")
         kmax = {"EO": 4, "CO|EO": 8, "CP|ori": 5, "EP|ori,CP": 5, "OLL": 12, "PLL": 10}[stage]
