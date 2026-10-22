@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مختبر طرق المكعب</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>مختبر طرق حل المكعب</h1>
+  <nav id="tabs">
+    <button data-tab="sim" class="on">المحاكي</button>
+    <button data-tab="cmp">مقارنة طريقتين</button>
+    <button data-tab="train">التدريب والقياس</button>
+    <button data-tab="drill">تمرين التعرّف</button>
+    <button data-tab="res">النتائج والقيود</button>
+    <button data-tab="help">الرموز</button>
+  </nav>
+  <div id="apistatus" class="muted"></div>
+</header>
+
+<main>
+<section id="sim" class="tab on">
+  <div class="cols">
+    <div class="viewer">
+      <div class="scene" id="scene"><div class="cube" id="cube"></div></div>
+      <div class="muted small">اسحب لتدوير زاوية النظر (لا يغيّر الحالة).</div>
+      <label class="chk"><input type="checkbox" id="hl" checked> إبراز القطع المعنية بالخطوة الحالية</label>
+    </div>
+    <div class="panel">
+      <h3>تنفيذ يدوي</h3>
+      <div id="movebtns" class="movebtns"></div>
+      <h3>خلط</h3>
+      <div class="row"><input id="scr" placeholder="مثال: R U R' U' F2" dir="ltr"><button id="applyScr">طبّق</button></div>
+      <div class="row">
+        <button id="reset">حالة محلولة</button>
+        <button id="rand">حالة عشوائية موحّدة</button>
+        <button id="editToggle">إدخال الألوان</button>
+      </div>
+      <div id="randnote" class="muted small"></div>
+      <div id="editor" hidden>
+        <div id="palette" class="palette"></div>
+        <div id="net" class="net"></div>
+        <div class="row"><button id="editApply">تحقّق واستخدم</button><span id="editMsg"></span></div>
+      </div>
+      <h3>الحل</h3>
+      <div class="row"><select id="method"></select><button id="solve">احسب</button></div>
+      <div id="solveMsg" class="muted small"></div>
+      <div class="player">
+        <button id="pFirst" title="البداية">⏮</button>
+        <button id="pPrev" title="رجوع">◀</button>
+        <button id="pPlay" title="تشغيل/إيقاف">⏯</button>
+        <button id="pNext" title="تقدم">▶</button>
+        <button id="pLast" title="النهاية">⏭</button>
+        <label>السرعة <input type="range" id="speed" min="80" max="900" value="300"></label>
+      </div>
+      <div id="steps"></div>
+    </div>
+  </div>
+</section>
+
+<section id="cmp" class="tab">
+  <p>يُحسب الحل للطريقتين على <b>الحالة الحالية نفسها</b> في المحاكي. الأرقام عدد حركات (حد أدنى حاسوبي لكل خطوة)، وليست أزمنة مقاسة.</p>
+  <div class="row"><select id="mA"></select><select id="mB"></select><button id="runCmp">قارن</button></div>
+  <div id="cmpOut" class="cols2"></div>
+</section>
+
+<section id="train" class="tab">
+  <div class="cols">
+    <div class="panel">
+      <h3>بيانات المشارك (تبقى محلياً)</h3>
+      <div class="grid2">
+        <label>المعرّف <input id="pid" placeholder="مثلاً: P01"></label>
+        <label>المستوى <select id="plevel"><option>مبتدئ</option><option>متوسط</option><option>متقدم</option></select></label>
+        <label>الطريقة المعتادة وسنوات الخبرة <input id="pexp" placeholder="CFOP، 3 سنوات"></label>
+        <label>الطريقة في هذه الجلسة <input id="pmethod" placeholder="مثلاً: CFOP أو المرشح X"></label>
+        <label>دقائق التدريب على هذه الطريقة حتى الآن <input id="ptrain" type="number" min="0" value="0"></label>
+        <label>نوع المحاولة <select id="pkind"><option value="practice">تدريب</option><option value="test">اختبار</option></select></label>
+        <label>البروتوكول <select id="pproto"><option value="independent">مستقل (بلا تعليمات أثناء الحل)</option><option value="assisted">بمساعدة (أتبع حلاً معروضاً)</option></select></label>
+        <label>فحص 15 ث <input type="checkbox" id="pinsp" checked></label>
+      </div>
+      <h3>الخلط</h3>
+      <div class="row"><button id="tNew">خلط جديد (حالة موحّدة)</button></div>
+      <div id="tScr" class="scr" dir="ltr"></div>
+      <div id="tTimer" class="timer">0.00</div>
+      <div class="muted small">المسافة/لمس المؤقت: بدء الفحص ← بدء الحل ← إيقاف. الزمن هنا زمن ضغط-إلى-ضغط وليس قياساً لحركات الأصابع؛ دقته تتأثر بتأخر الضغط.</div>
+      <div class="row">
+        <label>أخطاء/إعادة <input id="tErr" type="number" min="0" value="0" style="width:4em"></label>
+        <label><input type="checkbox" id="tDnf"> لم يكتمل (DNF)</label>
+        <input id="tNote" placeholder="ملاحظات">
+        <button id="tSave">احفظ المحاولة</button>
+      </div>
+      <div id="tMsg" class="muted small"></div>
+    </div>
+    <div class="panel">
+      <h3>جدول متوازن لمقارنة طريقتين (ABBA)</h3>
+      <div class="row"><input id="abA" placeholder="الطريقة A"><input id="abB" placeholder="الطريقة B"><input id="abN" type="number" value="12" style="width:4em"><button id="abGen">ولّد</button></div>
+      <div id="abOut" class="small"></div>
+      <h3>منحنى التعلّم (محاولاتك المحفوظة)</h3>
+      <svg id="curve" viewBox="0 0 400 220" class="curve"></svg>
+      <div class="row"><button id="tExport">تصدير CSV</button><button id="tClear">مسح البيانات المحلية</button></div>
+      <div id="tList" class="small"></div>
+    </div>
+  </div>
+</section>
+
+<section id="drill" class="tab">
+  <p>تمرين اتخاذ القرار بنفسك: يُعرض مكعب بعد خطوة الصليب (CFOP). اختر الزوج الذي تتوقع أنه الأقصر حلاً ثم اكشف الإجابة.
+     الإجابة «الصحيحة» هنا هي الأقصر حاسوبياً، وهي ليست بالضرورة الأسرع تنفيذاً لك.</p>
+  <div class="cols">
+    <div class="viewer"><div class="scene" id="dscene"><div class="cube" id="dcube"></div></div></div>
+    <div class="panel">
+      <button id="dNew">حالة جديدة</button>
+      <div id="dChoices" class="row"></div>
+      <div id="dOut"></div>
+      <div id="dScore" class="muted"></div>
+    </div>
+  </div>
+</section>
+
+<section id="res" class="tab">
+  <div id="resOut">...</div>
+</section>
+
+<section id="help" class="tab">
+  <h3>الرموز</h3>
+  <p>انظر إلى المكعب والوجه الأمامي F أمامك والعلوي U فوق. الحرف وحده = ربع لفة <b>مع عقارب الساعة كما تراه وأنت تنظر إلى ذلك الوجه مباشرة</b>.
+     الفاصلة ' = عكس عقارب الساعة. الرقم 2 = نصف لفة.</p>
+  <table class="tbl">
+    <tr><th>الرمز</th><th>المعنى</th><th>جرّب</th></tr>
+    <tr><td>U D R L F B</td><td>الأوجه: أعلى، أسفل، يمين، يسار، أمام، خلف</td><td class="try">U R F</td></tr>
+    <tr><td>M</td><td>الشريحة الوسطى بين R وL، تتحرك مثل L</td><td class="try">M</td></tr>
+    <tr><td>E</td><td>الشريحة بين U وD، تتحرك مثل D</td><td class="try">E</td></tr>
+    <tr><td>S</td><td>الشريحة بين F وB، تتحرك مثل F</td><td class="try">S</td></tr>
+    <tr><td>r u f (أو Rw ...)</td><td>حركة واسعة: الوجه مع الشريحة المجاورة</td><td class="try">r</td></tr>
+    <tr><td>x y z</td><td>تدوير المكعب كله (مثل R، مثل U، مثل F) — لا يغيّر الحل</td><td class="try">x y</td></tr>
+  </table>
+  <h3>مقاييس العدّ</h3>
+  <ul>
+    <li><b>HTM</b>: كل لفة وجه (ربع أو نصف) = 1، الشريحة = 2، التدوير = 0.</li>
+    <li><b>STM</b>: كل لفة وجه أو شريحة أو واسعة = 1، التدوير = 0.</li>
+    <li><b>QTM</b>: ربع اللفة = 1 ونصفها = 2.</li>
+    <li><b>ETM</b>: كل رمز بما فيه التدوير = 1 (الأقرب لعدد أفعال اليد).</li>
+    <li><b>ATM</b>: اللفات المتتالية على المحور نفسه تُعد واحدة.</li>
+  </ul>
+  <p class="muted">النتيجة في مقياس لا تُقارن بنتيجة في مقياس آخر.</p>
+</section>
+</main>
+<script src="cube.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

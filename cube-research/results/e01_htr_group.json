@@ -1,0 +1,59 @@
+{
+ "experiment": "e01_htr_group",
+ "provenance": {
+  "git": "4768f23",
+  "dirty_tree": false,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "ncpu": 4,
+  "started": "2026-10-22 12:51:14",
+  "seed": 20261022
+ },
+ "group_size": 663552,
+ "halfturn_only_distance_hist": {
+  "0": 1,
+  "1": 6,
+  "2": 27,
+  "3": 120,
+  "4": 519,
+  "5": 1932,
+  "6": 6484,
+  "7": 20310,
+  "8": 55034,
+  "9": 113892,
+  "10": 178495,
+  "11": 179196,
+  "12": 89728,
+  "13": 16176,
+  "14": 1488,
+  "15": 144
+ },
+ "states_within_5_halfturns": 2605,
+ "fraction_within_5_halfturns": 0.0039258415316358024,
+ "depth15_count": 144,
+ "depth15_optimal_htm_hist": {
+  "8": 6,
+  "9": 6,
+  "10": 18,
+  "11": 60,
+  "12": 30,
+  "13": 24
+ },
+ "depth15_example": {
+  "solution": "R U2 R2 L2 F2 B2 U2 L"
+ },
+ "sample_n": 400,
+ "sample_optimal_htm_hist": {
+  "6": 9,
+  "7": 11,
+  "8": 57,
+  "9": 113,
+  "10": 143,
+  "11": 51,
+  "12": 16
+ },
+ "sample_mean_optimal_htm": 9.4675,
+ "sample_mean_halfturn_only": 10.0775,
+ "sample_fraction_optimal_le5": 0.0,
+ "seconds": 468.5992126464844
+}

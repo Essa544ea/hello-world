@@ -93,16 +93,18 @@ _cache: Dict[str, core.Pattern] = {}
 
 
 def pattern(name: str, moves: Sequence[str], corners=(), edges=(), corners_ori=(), edges_ori=(),
-            centres=(), targets: Sequence[Sequence[str]] = ((),), edges_pos=(), corners_pos=()
-            ) -> core.Pattern:
+            centres=(), targets: Sequence[Sequence[str]] = ((),), edges_pos=(), corners_pos=(),
+            edge_groups=(), corner_groups=()) -> core.Pattern:
     """corners/edges/centres: pieces that must be exactly solved (each its own
     class, orientation tracked).  corners_ori/edges_ori: pieces whose
     orientation must be solved but whose identity/position does not matter
     (one shared oriented class).  edges_pos/corners_pos: exact position but
     orientation not tracked (use only when the move set preserves it).
+    edge_groups/corner_groups: extra lists of (pieces, oriented) that form one
+    indistinguishable class each (e.g. "the four E-slice edges").
     Everything else: one ignored class."""
     key = repr((name, list(moves), corners, edges, corners_ori, edges_ori, centres,
-                [list(t) for t in targets], edges_pos, corners_pos))
+                [list(t) for t in targets], edges_pos, corners_pos, edge_groups, corner_groups))
     if key in _cache:
         return _cache[key]
     ccls, ecls, xcls = [0] * 8, [0] * 12, [0] * 6
@@ -119,6 +121,14 @@ def pattern(name: str, moves: Sequence[str], corners=(), edges=(), corners_ori=(
         ecls[E_[p]] = 2 + len(edges) + i; eori.append(0)
     for i, p in enumerate(corners_pos):
         ccls[C_[p]] = 2 + len(corners) + i; cori.append(0)
+    for pieces, oriented in edge_groups:
+        k = len(eori); eori.append(int(oriented))
+        for p in pieces:
+            ecls[E_[p]] = k
+    for pieces, oriented in corner_groups:
+        k = len(cori); cori.append(int(oriented))
+        for p in pieces:
+            ccls[C_[p]] = k
     for i, p in enumerate(centres):
         xcls[X_[p]] = 1 + i
     # compact class ids so that every class 0..k-1 is non-empty
@@ -141,6 +151,7 @@ class StepResult:
     length: int
     nodes: int
     choice: Optional[str] = None
+    alternatives: Optional[Dict[str, int]] = None
 
 
 def solve_goal(s: CState, pats: Sequence[core.Pattern], max_len=30, node_limit=0, slack=0, max_sol=1):
@@ -173,18 +184,12 @@ def run_cfop(state: CubieCube, colour_neutral: str = "fixed", node_limit=0) -> D
     cross, pair, oll, llc, lle = cfop_patterns()
     orients = {"fixed": [[]], "dual": [[], ["x2"]], "full": D_COLOUR6}[colour_neutral]
     s0 = from_cubie(state)
-    best = None
-    for rot in orients:
-        s = conjugate(s0, rot)
-        L, sols, nodes = solve_goal(s, [cross])
-        if best is None or L < best[0]:
-            best = (L, rot, s, sols[0], nodes)
-    L, rot, s, sol, nodes = best
-    steps = [StepResult("cross", sol, L, nodes, " ".join(rot) or "-")]
+    L, rot, s, sol, nodes, alts = _choose_orientation(s0, orients, [cross])
+    steps = [StepResult("cross", sol, L, nodes, " ".join(rot) or "-", alts)]
     s = capply(s, sol)
     done: List[str] = []
     for k in range(4):
-        cand = None
+        cand, alts = None, {}
         for key in PAIRS:
             if key in done:
                 continue
@@ -192,17 +197,18 @@ def run_cfop(state: CubieCube, colour_neutral: str = "fixed", node_limit=0) -> D
             Lp, sols, nodes = solve_goal(s, pats, node_limit=node_limit)
             if Lp < 0:
                 raise RuntimeError(f"pair search failed ({Lp})")
+            alts[key] = Lp
             if cand is None or Lp < cand[0]:
                 cand = (Lp, key, sols[0], nodes)
         Lp, key, sol, nodes = cand
-        steps.append(StepResult(f"pair{k + 1}", sol, Lp, nodes, key))
+        steps.append(StepResult(f"pair{k + 1}", sol, Lp, nodes, key, alts))
         s = capply(s, sol)
         done.append(key)
     f2l = [pair[d] for d in done]
     Lo, sols, nodes = solve_goal(s, f2l + [oll], node_limit=node_limit)
     steps.append(StepResult("OLL", sols[0], Lo, nodes)); s = capply(s, sols[0])
     steps.append(final_solve(s, "PLL"))
-    return finish("CFOP-opt/" + colour_neutral, state, rot, steps)
+    return finish_("CFOP-opt/" + colour_neutral, state, rot, steps)
 
 
 def final_solve(s: CState, name: str) -> StepResult:
@@ -214,7 +220,7 @@ def final_solve(s: CState, name: str) -> StepResult:
     return StepResult(name, sols[0], L, nodes)
 
 
-def finish(method: str, state: CubieCube, rot: Sequence[str], steps: List[StepResult]) -> Dict:
+def finish_(method: str, state: CubieCube, rot: Sequence[str], steps: List[StepResult]) -> Dict:
     full = list(rot) + [m for st in steps for m in st.moves]
     ok = py_apply(state, parse(" ".join(full))) == SOLVED
     if not ok:
@@ -227,14 +233,15 @@ def finish(method: str, state: CubieCube, rot: Sequence[str], steps: List[StepRe
 ALL_E = list(E_)
 
 
-def _choose_orientation(s0: CState, orients, pats) -> Tuple[int, List[str], CState, List[str], int]:
-    best = None
+def _choose_orientation(s0: CState, orients, pats):
+    best, alts = None, {}
     for rot in orients:
         s = conjugate(s0, rot)
         L, sols, nodes = solve_goal(s, pats)
+        alts[" ".join(rot) or "-"] = L
         if best is None or L < best[0]:
             best = (L, rot, s, sols[0], nodes)
-    return best
+    return best + (alts,)
 
 
 def _ll(s: CState, ll: str, steps: List[StepResult], f2l_pats):
@@ -260,24 +267,25 @@ def run_zz(state: CubieCube, ll: str = "ocll_pll", orients=((),)) -> Dict:
     """ZZ with optimal steps: EOLine (face moves), left/right 1x2x3 blocks in
     <R,U,L> (cheaper block first), then last layer."""
     eoline = pattern("eoline", FACE, edges=["DF", "DB"], edges_ori=[e for e in ALL_E if e not in ("DF", "DB")])
-    L, rot, s, sol, nodes = _choose_orientation(from_cubie(state), [list(o) for o in orients], [eoline])
-    steps = [StepResult("EOLine", sol, L, nodes, " ".join(rot) or "-")]
+    L, rot, s, sol, nodes, alts = _choose_orientation(from_cubie(state), [list(o) for o in orients], [eoline])
+    steps = [StepResult("EOLine", sol, L, nodes, " ".join(rot) or "-", alts)]
     s = capply(s, sol)
     RUL = moveset("RUL")
     lb = pattern("zz_lb", RUL, corners=["DLF", "DBL"], edges_pos=["DF", "DB", "DL", "FL", "BL"])
     rb = pattern("zz_rb", RUL, corners=["DFR", "DRB"], edges_pos=["DF", "DB", "DR", "FR", "BR"])
-    first = None
+    first, alts = None, {}
     for name, p in (("LB", lb), ("RB", rb)):
         Lb, sols, nodes = solve_goal(s, [p])
+        alts[name] = Lb
         if first is None or Lb < first[0]:
             first = (Lb, name, p, sols[0], nodes)
     Lb, name, p, sol, nodes = first
-    steps.append(StepResult("block1", sol, Lb, nodes, name)); s = capply(s, sol)
+    steps.append(StepResult("block1", sol, Lb, nodes, name, alts)); s = capply(s, sol)
     Lb, sols, nodes = solve_goal(s, [lb, rb])
     steps.append(StepResult("block2", sols[0], Lb, nodes)); s = capply(s, sols[0])
     _, pair, _, _, _ = cfop_patterns()
     _ll(s, ll, steps, list(pair.values()))
-    return finish(f"ZZ-opt/{ll}", state, rot, steps)
+    return finish_(f"ZZ-opt/{ll}", state, rot, steps)
 
 
 # 8 orientations that bring each corner to DBL (2x2x2 location for Petrus)
@@ -291,8 +299,8 @@ def run_petrus(state: CubieCube, ll: str = "ocll_pll", neutral: bool = False) ->
     p223 = pattern("p223", FACE, corners=["DLF", "DBL"], edges=["DL", "DF", "FL"])
     eo = pattern("eo_all", FACE, edges_ori=ALL_E)
     orients = CORNER8 if neutral else [[]]
-    L, rot, s, sol, nodes = _choose_orientation(from_cubie(state), orients, [p222])
-    steps = [StepResult("2x2x2", sol, L, nodes, " ".join(rot) or "-")]
+    L, rot, s, sol, nodes, alts = _choose_orientation(from_cubie(state), orients, [p222])
+    steps = [StepResult("2x2x2", sol, L, nodes, " ".join(rot) or "-", alts)]
     s = capply(s, sol)
     L, sols, nodes = solve_goal(s, [p222, p223]); steps.append(StepResult("2x2x3", sols[0], L, nodes)); s = capply(s, sols[0])
     L, sols, nodes = solve_goal(s, [p222, p223, eo]); steps.append(StepResult("EO", sols[0], L, nodes)); s = capply(s, sols[0])
@@ -301,7 +309,7 @@ def run_petrus(state: CubieCube, ll: str = "ocll_pll", neutral: bool = False) ->
     L, sols, nodes = solve_goal(s, [pf]); steps.append(StepResult("F2L-RU", sols[0], L, nodes)); s = capply(s, sols[0])
     _, pair, _, _, _ = cfop_patterns()
     _ll(s, ll, steps, list(pair.values()))
-    return finish(f"Petrus-opt/{ll}{'/neutral' if neutral else ''}", state, rot, steps)
+    return finish_(f"Petrus-opt/{ll}{'/neutral' if neutral else ''}", state, rot, steps)
 
 
 # ---------------------------------------------------------------- Roux
@@ -360,8 +368,8 @@ def run_roux(state: CubieCube, neutral: str = "x") -> Dict:
     pc = pattern("roux_couple", ROUX_MOVES, corners=["DLF", "DFR"], edges=["DL", "DR"], targets=X4)
     cm = pattern("roux_cmll", ROUX_MOVES, corners=U_C, targets=X4)
     orients = L_COLOUR6 if neutral == "full" else [[]]
-    L, rot, s, sol, nodes = _choose_orientation(from_cubie(state), orients, [fb])
-    steps = [StepResult("FB", sol, L, nodes, " ".join(rot) or "-")]
+    L, rot, s, sol, nodes, alts = _choose_orientation(from_cubie(state), orients, [fb])
+    steps = [StepResult("FB", sol, L, nodes, " ".join(rot) or "-", alts)]
     s = capply(s, sol)
     L, sols, nodes = solve_goal(s, [fb, sb, pc]); steps.append(StepResult("SB", sols[0], L, nodes)); s = capply(s, sols[0])
     L, sols, nodes = solve_goal(s, [fb, sb, pc, cm]); steps.append(StepResult("CMLL", sols[0], L, nodes)); s = capply(s, sols[0])
@@ -375,4 +383,55 @@ def run_roux(state: CubieCube, neutral: str = "x") -> Dict:
         raise AssertionError("LSE state not in <M,U> coset")
     sol = _lse.solve(sr)
     steps.append(StepResult("LSE", list(r) + sol, len(sol), 0, " ".join(r) or "-"))
-    return finish(f"Roux-opt/{neutral}", state, rot, steps)
+    return finish_(f"Roux-opt/{neutral}", state, rot, steps)
+
+
+# ---------------------------------------------------------------- EO -> DR -> HTR -> finish
+DR_MOVES = ["U", "U2", "U'", "D", "D2", "D'", "R", "R2", "R'", "L", "L2", "L'", "F2", "B2"]
+HTR_MOVES = ["U", "U2", "U'", "D", "D2", "D'", "R2", "L2", "F2", "B2"]
+HALF = ["U2", "D2", "R2", "L2", "F2", "B2"]
+E_SLICE, M_SLICE, S_SLICE = ["FR", "FL", "BL", "BR"], ["UF", "UB", "DF", "DB"], ["UR", "UL", "DR", "DL"]
+_g3_corner_targets = None
+
+
+def g3_corner_targets() -> List[List[str]]:
+    """One half-turn move sequence for each of the 96 corner permutations of G3."""
+    global _g3_corner_targets
+    if _g3_corner_targets is None:
+        mv = {m: cseq([m]) for m in HALF}
+        start = cseq([])
+        seen = {start[0]: []}
+        frontier = [(start, [])]
+        while frontier:
+            nxt = []
+            for st, seq in frontier:
+                for m, c in mv.items():
+                    t = cmul(st, c)
+                    if t[0] not in seen:
+                        seen[t[0]] = seq + [m]
+                        nxt.append((t, seq + [m]))
+            frontier = nxt
+        _g3_corner_targets = list(seen.values())
+        assert len(_g3_corner_targets) == 96
+    return _g3_corner_targets
+
+
+def run_thistle(state: CubieCube, finish: str = "half", orients=((),)) -> Dict:
+    """EO (F/B axis) -> DR (U/D axis, Kociemba G1) -> HTR (G3) -> finish.
+    finish='half': finish with half turns only; 'any': optimal with all moves."""
+    eo = pattern("eo_all", FACE, edges_ori=ALL_E)
+    L, rot, s, sol, nodes, alts = _choose_orientation(from_cubie(state), [list(o) for o in orients], [eo])
+    steps = [StepResult("EO", sol, L, nodes, " ".join(rot) or "-", alts)]
+    s = capply(s, sol)
+    dr = pattern("dr_co_eslice", DR_MOVES, corners_ori=list(C_), edge_groups=[(E_SLICE, False)])
+    L, sols, nodes = solve_goal(s, [dr]); steps.append(StepResult("DR", sols[0], L, nodes)); s = capply(s, sols[0])
+    hc = pattern("htr_corners", HTR_MOVES, corners_pos=list(C_), targets=g3_corner_targets())
+    he = pattern("htr_edges", HTR_MOVES, edge_groups=[(E_SLICE, False), (M_SLICE, False), (S_SLICE, False)])
+    L, sols, nodes = solve_goal(s, [hc, he]); steps.append(StepResult("HTR", sols[0], L, nodes)); s = capply(s, sols[0])
+    c = CubieCube(s[0], s[1], s[2], s[3])
+    if finish == "half":
+        Lf, sols, nodes = core.optimal_solve(c, max_len=20, allowed=HALF)
+    else:
+        Lf, sols, nodes = core.optimal_solve(c, max_len=20)
+    steps.append(StepResult("finish", sols[0], Lf, nodes))
+    return finish_(f"EO-DR-HTR-opt/{finish}", state, rot, steps)
