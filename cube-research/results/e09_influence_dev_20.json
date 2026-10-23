@@ -1,0 +1,523 @@
+{
+ "experiment": "e09",
+ "provenance": {
+  "git": "cb71f71",
+  "dirty_tree": false,
+  "python": "3.13.16",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "ncpu": 4,
+  "started": "2026-10-23 07:09:28",
+  "n": 20,
+  "split": "dev"
+ },
+ "summary": {
+  "greedy": {
+   "STM": 35.9,
+   "CMLL": 9.8,
+   "LSE": 11.05,
+   "CMLL+LSE": 20.85
+  },
+  "joint0": {
+   "STM": 32.7,
+   "CMLL": 9.8,
+   "LSE": 7.85,
+   "CMLL+LSE": 17.65
+  },
+  "joint1": {
+   "STM": 31.45,
+   "CMLL": 10.25,
+   "LSE": 6.15,
+   "CMLL+LSE": 16.4
+  },
+  "paired_diff_joint0": {
+   "mean": -3.2,
+   "sem": 0.4979959839195493
+  },
+  "paired_diff_joint1": {
+   "mean": -4.45,
+   "sem": 0.40295781416917575
+  }
+ },
+ "runs": [
+  {
+   "index": 0,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 10,
+    "LSE": 10,
+    "seconds": 1.864004135131836,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 34,
+    "CMLL": 10,
+    "LSE": 9,
+    "seconds": 2.270205020904541,
+    "candidates": 36
+   },
+   "joint1": {
+    "STM": 31,
+    "CMLL": 11,
+    "LSE": 5,
+    "seconds": 28.786216974258423,
+    "candidates": 1085
+   }
+  },
+  {
+   "index": 1,
+   "greedy": {
+    "STM": 38,
+    "CMLL": 9,
+    "LSE": 13,
+    "seconds": 0.04976058006286621,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 35,
+    "CMLL": 9,
+    "LSE": 10,
+    "seconds": 0.33721399307250977,
+    "candidates": 33
+   },
+   "joint1": {
+    "STM": 34,
+    "CMLL": 10,
+    "LSE": 8,
+    "seconds": 4.064008712768555,
+    "candidates": 915
+   }
+  },
+  {
+   "index": 2,
+   "greedy": {
+    "STM": 38,
+    "CMLL": 10,
+    "LSE": 14,
+    "seconds": 0.7293157577514648,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 37,
+    "CMLL": 10,
+    "LSE": 13,
+    "seconds": 2.8235912322998047,
+    "candidates": 3
+   },
+   "joint1": {
+    "STM": 33,
+    "CMLL": 11,
+    "LSE": 8,
+    "seconds": 33.77514839172363,
+    "candidates": 579
+   }
+  },
+  {
+   "index": 3,
+   "greedy": {
+    "STM": 39,
+    "CMLL": 10,
+    "LSE": 13,
+    "seconds": 2.353761911392212,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 37,
+    "CMLL": 10,
+    "LSE": 11,
+    "seconds": 3.53494930267334,
+    "candidates": 18
+   },
+   "joint1": {
+    "STM": 35,
+    "CMLL": 11,
+    "LSE": 8,
+    "seconds": 39.70771598815918,
+    "candidates": 430
+   }
+  },
+  {
+   "index": 4,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 9,
+    "LSE": 11,
+    "seconds": 0.06051993370056152,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 34,
+    "CMLL": 9,
+    "LSE": 10,
+    "seconds": 0.42829418182373047,
+    "candidates": 135
+   },
+   "joint1": {
+    "STM": 32,
+    "CMLL": 10,
+    "LSE": 7,
+    "seconds": 4.267475128173828,
+    "candidates": 2466
+   }
+  },
+  {
+   "index": 5,
+   "greedy": {
+    "STM": 36,
+    "CMLL": 11,
+    "LSE": 10,
+    "seconds": 25.644805669784546,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 32,
+    "CMLL": 11,
+    "LSE": 6,
+    "seconds": 142.5257110595703,
+    "candidates": 1770
+   },
+   "joint1": {
+    "STM": 32,
+    "CMLL": 11,
+    "LSE": 6,
+    "seconds": 232.87023448944092,
+    "candidates": 5000
+   }
+  },
+  {
+   "index": 6,
+   "greedy": {
+    "STM": 33,
+    "CMLL": 7,
+    "LSE": 12,
+    "seconds": 0.008894205093383789,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 33,
+    "CMLL": 7,
+    "LSE": 12,
+    "seconds": 0.011157989501953125,
+    "candidates": 3
+   },
+   "joint1": {
+    "STM": 29,
+    "CMLL": 8,
+    "LSE": 7,
+    "seconds": 0.06041765213012695,
+    "candidates": 42
+   }
+  },
+  {
+   "index": 7,
+   "greedy": {
+    "STM": 33,
+    "CMLL": 11,
+    "LSE": 8,
+    "seconds": 3.201416015625,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 30,
+    "CMLL": 11,
+    "LSE": 5,
+    "seconds": 31.21438479423523,
+    "candidates": 252
+   },
+   "joint1": {
+    "STM": 30,
+    "CMLL": 11,
+    "LSE": 5,
+    "seconds": 199.37682604789734,
+    "candidates": 5000
+   }
+  },
+  {
+   "index": 8,
+   "greedy": {
+    "STM": 40,
+    "CMLL": 10,
+    "LSE": 15,
+    "seconds": 7.1132519245147705,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 33,
+    "CMLL": 10,
+    "LSE": 8,
+    "seconds": 10.076984643936157,
+    "candidates": 60
+   },
+   "joint1": {
+    "STM": 33,
+    "CMLL": 10,
+    "LSE": 8,
+    "seconds": 94.37722778320312,
+    "candidates": 1436
+   }
+  },
+  {
+   "index": 9,
+   "greedy": {
+    "STM": 39,
+    "CMLL": 10,
+    "LSE": 12,
+    "seconds": 0.41756582260131836,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 32,
+    "CMLL": 10,
+    "LSE": 5,
+    "seconds": 4.145618438720703,
+    "candidates": 165
+   },
+   "joint1": {
+    "STM": 32,
+    "CMLL": 10,
+    "LSE": 5,
+    "seconds": 46.96118092536926,
+    "candidates": 3630
+   }
+  },
+  {
+   "index": 10,
+   "greedy": {
+    "STM": 32,
+    "CMLL": 10,
+    "LSE": 8,
+    "seconds": 0.5518500804901123,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 31,
+    "CMLL": 10,
+    "LSE": 7,
+    "seconds": 4.962822675704956,
+    "candidates": 132
+   },
+   "joint1": {
+    "STM": 31,
+    "CMLL": 10,
+    "LSE": 7,
+    "seconds": 54.75817918777466,
+    "candidates": 3336
+   }
+  },
+  {
+   "index": 11,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 11,
+    "LSE": 10,
+    "seconds": 27.235817193984985,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 35,
+    "CMLL": 11,
+    "LSE": 10,
+    "seconds": 34.24002504348755,
+    "candidates": 1
+   },
+   "joint1": {
+    "STM": 33,
+    "CMLL": 12,
+    "LSE": 7,
+    "seconds": 427.5346779823303,
+    "candidates": 1524
+   }
+  },
+  {
+   "index": 12,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 11,
+    "LSE": 11,
+    "seconds": 4.945311784744263,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 31,
+    "CMLL": 11,
+    "LSE": 7,
+    "seconds": 44.449429512023926,
+    "candidates": 260
+   },
+   "joint1": {
+    "STM": 31,
+    "CMLL": 11,
+    "LSE": 7,
+    "seconds": 352.18623900413513,
+    "candidates": 5000
+   }
+  },
+  {
+   "index": 13,
+   "greedy": {
+    "STM": 39,
+    "CMLL": 11,
+    "LSE": 13,
+    "seconds": 13.06626272201538,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 34,
+    "CMLL": 11,
+    "LSE": 8,
+    "seconds": 52.95265436172485,
+    "candidates": 36
+   },
+   "joint1": {
+    "STM": 31,
+    "CMLL": 12,
+    "LSE": 4,
+    "seconds": 593.9113647937775,
+    "candidates": 4892
+   }
+  },
+  {
+   "index": 14,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 9,
+    "LSE": 11,
+    "seconds": 0.13887691497802734,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 28,
+    "CMLL": 9,
+    "LSE": 4,
+    "seconds": 0.6844203472137451,
+    "candidates": 214
+   },
+   "joint1": {
+    "STM": 28,
+    "CMLL": 9,
+    "LSE": 4,
+    "seconds": 6.600842714309692,
+    "candidates": 3593
+   }
+  },
+  {
+   "index": 15,
+   "greedy": {
+    "STM": 33,
+    "CMLL": 8,
+    "LSE": 10,
+    "seconds": 0.002820730209350586,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 30,
+    "CMLL": 8,
+    "LSE": 7,
+    "seconds": 0.02525496482849121,
+    "candidates": 128
+   },
+   "joint1": {
+    "STM": 30,
+    "CMLL": 8,
+    "LSE": 7,
+    "seconds": 0.38663792610168457,
+    "candidates": 2314
+   }
+  },
+  {
+   "index": 16,
+   "greedy": {
+    "STM": 37,
+    "CMLL": 11,
+    "LSE": 9,
+    "seconds": 4.175534725189209,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 33,
+    "CMLL": 11,
+    "LSE": 5,
+    "seconds": 38.75781273841858,
+    "candidates": 908
+   },
+   "joint1": {
+    "STM": 33,
+    "CMLL": 11,
+    "LSE": 5,
+    "seconds": 134.77873587608337,
+    "candidates": 5000
+   }
+  },
+  {
+   "index": 17,
+   "greedy": {
+    "STM": 32,
+    "CMLL": 7,
+    "LSE": 8,
+    "seconds": 0.027432918548583984,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 29,
+    "CMLL": 7,
+    "LSE": 5,
+    "seconds": 0.034012794494628906,
+    "candidates": 28
+   },
+   "joint1": {
+    "STM": 29,
+    "CMLL": 7,
+    "LSE": 5,
+    "seconds": 0.16947174072265625,
+    "candidates": 328
+   }
+  },
+  {
+   "index": 18,
+   "greedy": {
+    "STM": 39,
+    "CMLL": 11,
+    "LSE": 12,
+    "seconds": 8.29906702041626,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 37,
+    "CMLL": 11,
+    "LSE": 10,
+    "seconds": 39.403531312942505,
+    "candidates": 110
+   },
+   "joint1": {
+    "STM": 33,
+    "CMLL": 12,
+    "LSE": 5,
+    "seconds": 450.2563199996948,
+    "candidates": 3943
+   }
+  },
+  {
+   "index": 19,
+   "greedy": {
+    "STM": 35,
+    "CMLL": 10,
+    "LSE": 11,
+    "seconds": 0.41483211517333984,
+    "candidates": null
+   },
+   "joint0": {
+    "STM": 29,
+    "CMLL": 10,
+    "LSE": 5,
+    "seconds": 3.6789002418518066,
+    "candidates": 179
+   },
+   "joint1": {
+    "STM": 29,
+    "CMLL": 10,
+    "LSE": 5,
+    "seconds": 46.67944264411926,
+    "candidates": 3841
+   }
+  }
+ ]
+}
